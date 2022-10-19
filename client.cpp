@@ -4,6 +4,9 @@
 #pragma comment(lib,"ws2_32.lib") 
 #include<time.h>
 #include <conio.h>
+#include <string>
+#include <iostream>
+using namespace std;
 
 #define MAXBUFSIZE 1024 //接收或发送的data的最大长度为sizeof(char[1024])
 char name[20];
@@ -16,7 +19,8 @@ int sendMessage(SOCKET clientSocket) {
 
     memset(massage, 0, 900 * sizeof(char));
     printf("请发送你的消息:");
-    scanf_s("%s", &massage, 900);
+    cin.getline(massage, 900, '\n');
+   // scanf_s("%s", &massage, 900);
     if (strcmp(massage, "q") == 0) {
         //发送q至srver
         memset(sendBuf, 0, MAXBUFSIZE * sizeof(char));

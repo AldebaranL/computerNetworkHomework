@@ -19,8 +19,8 @@ DWORD WINAPI handlerRequest(LPVOID lparam)
         printf("群聊人数已达上限\n");
         return 0;
     }
-    //SOCKET socket = (SOCKET)(LPVOID)lparam;
-    ClientSockets.push_back((SOCKET)(LPVOID)lparam);
+    SOCKET socket = (SOCKET)(LPVOID)lparam;
+    ClientSockets.push_back(socket);
     std::vector<SOCKET>::iterator socket_it = ClientSockets.end() - 1;
    // std::cout << socket == ClientSockets.back();
    // ClientSockets[ClientSocket_id] = (SOCKET)(LPVOID)lparam;
@@ -30,24 +30,24 @@ DWORD WINAPI handlerRequest(LPVOID lparam)
     memset(sendBuf, 0, MAXBUFSIZE*sizeof(char));
     strcpy_s(sendBuf,MAXBUFSIZE,"成功连接\n\0");
     printf("%s", sendBuf);
-    send(*socket_it, sendBuf, MAXBUFSIZE, 0);
+    send(socket, sendBuf, MAXBUFSIZE, 0);
     memset(sendBuf, 0, MAXBUFSIZE * sizeof(char));
     strcpy_s(sendBuf, MAXBUFSIZE, "q");
-    send(*socket_it, sendBuf, MAXBUFSIZE, 0);
+    send(socket, sendBuf, MAXBUFSIZE, 0);
     printf("完成连接到%d\n", ClientSocket_id);
 
     while (1) {
         //接收
         char receiveBuf[MAXBUFSIZE];  
         memset(receiveBuf, 0, MAXBUFSIZE * sizeof(char));
-        recv(*socket_it, receiveBuf, MAXBUFSIZE, 0);
+        recv(socket, receiveBuf, MAXBUFSIZE, 0);
         printf("收到来自%d: %s", ClientSocket_id, receiveBuf);
 
         //关闭并断开连接
         if (strcmp(receiveBuf, "q") == 0) {
             printf("%d已退出群聊\n", ClientSocket_id);
-            closesocket(*socket_it);
-            ClientSockets.erase(socket_it);
+            closesocket(socket);
+            //ClientSockets.erase(socket_it);
             ClientSocket_num--;
             break;
         }
@@ -65,7 +65,7 @@ DWORD WINAPI handlerRequest(LPVOID lparam)
         //发送q使当前client停止接收
         memset(sendBuf, 0, MAXBUFSIZE * sizeof(char));
         strcpy_s(sendBuf, MAXBUFSIZE, "q");
-        send(*socket_it, sendBuf, MAXBUFSIZE, 0);
+        send(socket, sendBuf, MAXBUFSIZE, 0);
     }
     return 0;
 }
